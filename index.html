@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analytics Playground</title>
+  <style>
+    :root { --bg:#0f172a; --card:#111827; --text:#e5e7eb; --muted:#9ca3af; --accent:#22c55e; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 50% -100px, #1f2937 0%, #0b1020 60%, #000 100%);
+      color: var(--text);
+    }
+    .wrap { max-width: 900px; margin: 0 auto; padding: 32px 16px 80px; }
+    header { padding: 32px 0 12px; }
+    h1 { margin: 0 0 6px; letter-spacing: .3px; font-weight: 700; }
+    p { color: var(--muted); line-height: 1.6; }
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px; padding: 20px; margin: 14px 0;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+    .btns { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+    button {
+      appearance: none; border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06); color: var(--text);
+      padding: 10px 16px; border-radius: 10px; cursor: pointer; font-weight: 600;
+      transition: transform .04s ease, background .2s ease;
+    }
+    button:hover { background: rgba(255,255,255,0.14); }
+    button:active { transform: translateY(1px); }
+    input[type="email"] { padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.06); color: var(--text); width: 260px; }
+    .muted { color: var(--muted); font-size: 14px; }
+    .row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+    .footer { margin-top: 22px; font-size: 13px; color: var(--muted); }
+    a { color: #93c5fd; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code { background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 6px; }
+  </style>
+
+  <!-- Google Tag Manager - HEAD (replace GTM-XXXXXXX with your container ID) -->
+  <script>
+    // If you haven't set up GTM yet, leave this as-is and follow the README.
+    // Once you have your container ID, replace GTM-XXXXXXX below.
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-XXXXXXX');
+  </script>
+  <!-- End Google Tag Manager -->
+</head>
+<body>
+  <!-- Google Tag Manager - BODY (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <div class="wrap">
+    <header>
+      <h1>Analytics Playground</h1>
+      <p class="muted">A tiny site to learn GA4 + GTM with real data. Open your GA Realtime tab, then click stuff below.</p>
+    </header>
+
+    <section class="card">
+      <h2>1) Custom events via <code>dataLayer</code></h2>
+      <p>These buttons push custom events. In GTM, create a <strong>Custom Event</strong> trigger named <code>button_click</code> and fire a GA4 Event tag.</p>
+      <div class="btns">
+        <button onclick="pushEvent('button_click', {button_id:'A', button_text:'Primary CTA'})">Click Button A</button>
+        <button onclick="pushEvent('button_click', {button_id:'B', button_text:'Secondary CTA'})">Click Button B</button>
+        <button onclick="pushEvent('video_play', {video_title:'Demo Reel'})">Play Demo Video</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>2) Outbound link</h2>
+      <p>Enhanced Measurement in GA4 can auto-capture outbound clicks. Or do it via GTM link-click triggers.</p>
+      <div class="btns">
+        <a href="https://example.com" target="_blank" rel="noopener" onclick="pushEvent('outbound_click', {link_url:this.href})">
+          Visit example.com
+        </a>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>3) Simple form</h2>
+      <p>Submitting this form pushes a <code>sign_up</code> event.</p>
+      <form onsubmit="onSignup(event)">
+        <div class="row">
+          <input type="email" id="email" placeholder="you@example.com" required />
+          <button type="submit">Sign up</button>
+        </div>
+        <p class="footer">After submit, check GA Realtime → Events.</p>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>Debug</h2>
+      <p class="muted">Open DevTools → Console to see events as they’re pushed to <code>dataLayer</code>.</p>
+    </section>
+
+    <footer class="footer">
+      Replace <code>GTM-XXXXXXX</code> with your GTM container ID. Then configure GA4 tags in GTM as described in the README.
+    </footer>
+  </div>
+
+  <script>
+    // Utilities for pushing events
+    window.dataLayer = window.dataLayer || [];
+    function pushEvent(name, params) {
+      const payload = Object.assign({ event: name, ts: Date.now() }, params || {});
+      console.log("dataLayer.push:", payload);
+      window.dataLayer.push(payload);
+    }
+    function onSignup(e){
+      e.preventDefault();
+      const email = document.getElementById('email').value || '';
+      pushEvent('sign_up', { method:'email', email_domain: email.split('@')[1] || '' });
+      e.target.reset();
+      alert('Thanks! Event pushed. Check GA Realtime.');
+    }
+  </script>
+</body>
+</html>
